@@ -1,0 +1,1 @@
+# otus-hw3-valid-data
