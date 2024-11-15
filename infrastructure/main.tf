@@ -117,6 +117,7 @@ resource "yandex_storage_bucket" "data_bucket" {
   access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
   secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
   force_destroy = true
+  acl    = "public-read"
 }
 
 # Dataproc ресурсы
@@ -162,23 +163,11 @@ resource "yandex_dataproc_cluster" "dataproc_cluster" {
       role = "DATANODE"
       resources {
         resource_preset_id = var.dataproc_data_resources.resource_preset_id
-        disk_type_id       = "network-ssd"
+        disk_type_id       = "network-hdd"
         disk_size          = var.dataproc_data_resources.disk_size
       }
       subnet_id   = yandex_vpc_subnet.subnet.id
-      hosts_count = 1
-    }
-
-    subcluster_spec {
-      name = "compute"
-      role = "COMPUTENODE"
-      resources {
-        resource_preset_id = var.dataproc_compute_resources.resource_preset_id
-        disk_type_id       = "network-ssd"
-        disk_size          = var.dataproc_compute_resources.disk_size
-      }
-      subnet_id   = yandex_vpc_subnet.subnet.id
-      hosts_count = 1
+      hosts_count = 3
     }
   }
 }
@@ -197,6 +186,7 @@ resource "yandex_compute_instance" "proxy" {
   platform_id               = "standard-v3"
   zone                      = var.yc_zone
   service_account_id        = yandex_iam_service_account.sa.id
+  # size                      = var.proxy_size
 
   metadata = {
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
@@ -209,6 +199,7 @@ resource "yandex_compute_instance" "proxy" {
       secret_key                  = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
       s3_bucket                   = yandex_storage_bucket.data_bucket.bucket
       upload_data_to_hdfs_content = file("${path.root}/scripts/upload_data_to_hdfs.sh")
+      upload_data_from_hdfs_content = file("${path.root}/scripts/upload_data_from_hdfs.sh")
     })
   }
 

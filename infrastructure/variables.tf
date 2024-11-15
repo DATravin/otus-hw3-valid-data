@@ -35,7 +35,7 @@ variable "yc_subnet_name" {
 
 variable "yc_service_account_name" {
   type        = string
-  description = "Name of the service account"  
+  description = "Name of the service account"
 }
 
 variable "yc_bucket_name" {
@@ -65,7 +65,7 @@ variable "yc_security_group_name" {
 
 variable "yc_subnet_range" {
   type        = string
-  description = "CIDR block for the subnet"  
+  description = "CIDR block for the subnet"
 }
 
 variable "yc_dataproc_cluster_name" {
@@ -88,6 +88,8 @@ variable "private_key_path" {
   description = "Path to the private key file"
 }
 
+
+
 variable "dataproc_master_resources" {
   type = object({
     resource_preset_id = string
@@ -95,24 +97,12 @@ variable "dataproc_master_resources" {
     disk_size          = number
   })
   default = {
-    resource_preset_id = "s3-c4-m16"
+    resource_preset_id = "s3-c2-m8"
     disk_type_id       = "network-ssd"
-    disk_size          = 40
+    disk_size          = 20
   }
 }
 
-variable "dataproc_compute_resources" {
-  type = object({
-    resource_preset_id = string
-    disk_type_id       = string
-    disk_size          = number
-  })
-  default = {
-    resource_preset_id = "s3-c4-m16"
-    disk_type_id       = "network-ssd"
-    disk_size          = 60
-  }
-}
 
 variable "dataproc_data_resources" {
   type = object({
@@ -122,7 +112,7 @@ variable "dataproc_data_resources" {
   })
   default = {
     resource_preset_id = "s3-c4-m16"
-    disk_type_id       = "network-ssd"
-    disk_size          = 60
+    disk_type_id       = "network-hdd"
+    disk_size          = 70
   }
 }

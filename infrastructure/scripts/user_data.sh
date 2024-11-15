@@ -135,9 +135,18 @@ log "Copying upload_data_to_hdfs.sh script to proxy machine"
 echo '${upload_data_to_hdfs_content}' > /home/ubuntu/scripts/upload_data_to_hdfs.sh
 sed -i 's/{{ s3_bucket }}/'$TARGET_BUCKET'/g' /home/ubuntu/scripts/upload_data_to_hdfs.sh
 
+# Копируем скрипт upload_data_to_hdfs.sh на прокси-машину
+log "Copying upload_data_from_hdfs.sh script to proxy machine"
+echo '${upload_data_from_hdfs_content}' > /home/ubuntu/scripts/upload_data_from_hdfs.sh
+sed -i 's/{{ s3_bucket }}/'$TARGET_BUCKET'/g' /home/ubuntu/scripts/upload_data_from_hdfs.sh
+
 # Устанавливаем правильные разрешения для скрипта на прокси-машине
 log "Setting permissions for upload_data_to_hdfs.sh on proxy machine"
 chmod +x /home/ubuntu/scripts/upload_data_to_hdfs.sh
+
+# Устанавливаем правильные разрешения для скрипта на прокси-машине
+log "Setting permissions for upload_data_from_hdfs.sh on proxy machine"
+chmod +x /home/ubuntu/scripts/upload_data_from_hdfs.sh
 
 # Проверяем подключение к мастер-ноде
 log "Checking connection to master node"
@@ -154,11 +163,32 @@ fi
 log "Copying upload_data_to_hdfs.sh script from proxy machine to master node"
 scp -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no /home/ubuntu/scripts/upload_data_to_hdfs.sh ubuntu@$DATAPROC_MASTER_FQDN:/home/ubuntu/
 
+# Копируем скрипт upload_data_to_hdfs.sh с прокси-машины на мастер-ноду
+log "Copying upload_data_from_hdfs.sh script from proxy machine to master node"
+scp -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no /home/ubuntu/scripts/upload_data_from_hdfs.sh ubuntu@$DATAPROC_MASTER_FQDN:/home/ubuntu/
+
+
 # Устанавливаем правильные разрешения для скрипта на мастер-ноде
 log "Setting permissions for upload_data_to_hdfs.sh on master node"
 ssh -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no ubuntu@$DATAPROC_MASTER_FQDN "chmod +x /home/ubuntu/upload_data_to_hdfs.sh"
 
+# Устанавливаем правильные разрешения для скрипта на мастер-ноде
+log "Setting permissions for upload_data_from_hdfs.sh on master node"
+ssh -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no ubuntu@$DATAPROC_MASTER_FQDN "chmod +x /home/ubuntu/upload_data_from_hdfs.sh"
+
 log "Script upload_data_to_hdfs.sh has been copied to the master node"
+
+
+# Копируем скрипт cleaning_data.py с прокси-машины на мастер-ноду
+#log "Copying cleaning_data.py script from proxy machine to master node"
+#scp -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no /home/ubuntu/scripts/cleaning_data.py ubuntu@$DATAPROC_MASTER_FQDN:/home/ubuntu/
+
+# Устанавливаем правильные разрешения для скрипта cleaning_data.py на мастер-ноде
+log "Setting permissions for cleaning_data.py on master node"
+ssh -i /home/ubuntu/.ssh/dataproc_key -o StrictHostKeyChecking=no ubuntu@$DATAPROC_MASTER_FQDN "chmod +x /home/ubuntu/cleaning_data.py"
+
+log "Script upload_data_to_hdfs.sh has been copied to the master node"
+
 
 # Изменяем владельца лог-файла
 log "Changing ownership of log file"
